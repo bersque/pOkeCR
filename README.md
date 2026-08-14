@@ -1,5 +1,4 @@
 # pOkeCR
-#### Video Demo: https://youtu.be/raMnXt7KSsA
 #### Description:
 My project aims to streamline the proccess of pokemon nuzlocke calcing for Pokemon Fire Red through fetching data off off the screen. The function used to
 smoothly run the app is the run_and_bun.py.
