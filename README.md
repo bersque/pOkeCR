@@ -6,17 +6,26 @@ smoothly run the app is the run_and_bun.py.
 Inside the file is the code, which calls the main script (located in display.py) through the press of the F6 button. Running the code using a hotkey is important, 
 as the whole screen needs to be visible during the proccess. The main function then runs the fetch_pokemon_data, fetch_moves_and_data, create_move_list and calc_hp_speed functions.
 
-Calling the fetch_pokemon_data function causes:
-1. get_pic function to take a screenshot (using the pyautogui library) of a predefined spot on the screen, coresponding to the enemy and player's pokemon's level and names. Then it processes it slightly using the CSV library to get a black and white picture.
-2. Once we have a screenshot of the in-game font text, we run the separate_letters function. Using it, we first create vertical one-pixel wide layers of the original photo. Afterwards, we analyse which ones of these slices does not contain the color black, which implies a space. Using this information and the connect_slices function, separate_letters separates the picture into perfectly cut pictures of the individual letters.
-3. A list of letters is then passed into the get_text function, which is my implementation of an OCR. At first I wanted to use a pre-built library like Teseract, but it turned out to not work well with a pixelated font - in fact, it didn't work at all!
-ocr.py consists mainly of two functions and 2 precreated dictionaries. The dictionaries are letters_as_arrs and nums_as_arrs - they are screenshots of the pokemon font for numbers (for levels) and for letters (for pokemon names). When the list of letters is passed into get_text, the first function called is recognize name. It takes every provided letter and calculates the Hamming distance between itself and every entry in the dictionary, effectively finding the most similair letter out of every single one provided. The Hamming distance measures the sum of differences in each of the arrays' elements. If the arrays are of different sizes, it measures the differences in the common part but also adds a penality for the difference in size. This, however, still doesn't yield a 100% success ratio. Thus, the function get_text receives the recognized, probably sligtly misshaped word, and using fuzzy logic compares it to every single pokemon name fetched from the database. It then returns the most likely match. This yields a perfect OCR :)
+The fetch_pokemon_data and fetch_move_data files call for functions that take screenshots of the display, separate the image of the in-game font text into individual pictures and then use Hamming distance and fuzzy logic to compare them to a predefined dictionary of Pokémon Fire Red font letters. After being recognized, they are glued back together into the name of a Pokémon or a move name.
 
-The fetch_move_data uses the same logic to recognize text as above - we screenshot the area of each move and pass it to the get_text function. It then creates a move list for the player's active pokemon.
+This string is then passed through a database, which lets us calculate the ranges for each pokemon's statistics and moves' damage. The ranges are important, as each pokemon's stats are "randomized" through the implementation of natures, EVs and IVs, which are mostly invisible for the player. The only way to obtain them seemlessly is by a connection with the emulator. This, however, goes outside the scope of this project.
 
-All of this data is then passed through a database, which lets us calculate the ranges for each pokemon's statistics, letting us adjust our nuzlocke playstyle. The ranges are important, as each pokemon's stats are "randomized" through the implementation of natures, EVs and IVs, which are mostly invisible for the player. The only way to fetch them is through a connection with the emulator, but this goes outside the scope for this project.
-Most notably, we adjust for pokemon's type in the damage calculation. After fetching the data off the database, we check if the matchup is a winning or losing one, and we also adjust the Same Type Attack Bonus Multiplayer. The weaknesses implementation is accurate and covers scenarios such as double weakness or a negation from weakness and resistance. Then we calculate the worst and best possible outcome of the attack, based on player's and enemy's pokemon's attack (or special attack) and defense (or special defense), depending on the attack's typing. In generation 3 of pokemon, the statistic used when calculating the damage is tied to its type - some types use special- and some use normal- statistics.
+### Features:
+-Calculating the statistics' range for the Pokémon,
+-Calculating the damage ranges for each of the moves,
+-Accurate calculations due to Pokémon-type checking and adjustments for beneficial and hindering natures.
+-Ease of use :)
 
-The script is greatly optimized to minimalize the amount of functions needed for it to run, e.g. get text receives 2 arguments:letters and application. If application is lvl, it return int(lvl), if the application is move, the fuzzy logic layer refernces the move_list from a database and if the application is name, it references a list of all pokemon names.
+![alt text](https://github.com/bersque/pOkeCR/blob/main/obraz.png "Logo Title Text 1")
 
-The script as it is must be ran on the mGBA emualtor in windowed fullscreen on a 1980x1080 resolution. Otherwise, the regions of screenshots will not fit and the ocr will not yield satisfactory results. If one wishes to run pOkeCR on a different setup, it is needed to manually adjust the screenshot regions from fetch_moves_and_data and fetch_pokemon_data.
+### How to run:
+
+1. Run run_and_bun.py.
+2. Run Pokémon Fire Red on mGBA and windowed fullscreen.
+3. Whenever needed, press F6 and run the script.
+4. Enjoy!
+
+The script must be ran on the mGBA emualtor in windowed fullscreen and 1980x1080 resolution. Otherwise, the regions of screenshots will not fit and the OCR will not yield satisfactory results. If one wishes to run pOkeCR on a different setup, it is needed to manually adjust the screenshot regions from fetch_moves_and_data and fetch_pokemon_data.
+
+
+
