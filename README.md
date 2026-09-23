@@ -1,14 +1,14 @@
 # pOkeCR
 #### Description:
-My project aims to streamline the proccess of pokemon nuzlocke calcing for Pokemon Fire Red through fetching data off off the screen. The function used to
+My project aims to streamline the proccess of Pokémon nuzlocke calcing for Pokémon Fire Red by fetching all of the required data off of the screen. The function used to
 smoothly run the app is the run_and_bun.py.
 
-In there lies the script which runs the main script (located in display.py) through the press of the F6 button. It is important to have it on a hotkey,
-as it is imperative for the whole screen to be visible during the proccess. The main function then runs the fetch_pokemon_data, fetch_moves_and_data, create_move_list and calc_hp_speed functions, which are the heart and soul of the program.
+Inside the file is the code, which calls the main script (located in display.py) through the press of the F6 button. Running the code using a hotkey is important, 
+as the whole screen needs to be visible during the proccess. The main function then runs the fetch_pokemon_data, fetch_moves_and_data, create_move_list and calc_hp_speed functions.
 
 Calling the fetch_pokemon_data function causes:
-1. get_pic function to take a screenshot (using the pyautogui library) of a predefined spot on the screen, coresponding to the enemy and player's pokemon's level and names. Then it processes it slightly to get a black and white picture, which is easier to manipulate.
-2. once we have a screenshot of a string of in-game font text, we run the separate_letters function. Using it, we first create vertical one-pixel wide layers of the original photo. Afterwards, we analyse which ones of these slices does not contain the color black, which implies a space. Using this information and the connect_slices function, separate_letters separates the picture into perfectly cut pictures of the individual letters.
+1. get_pic function to take a screenshot (using the pyautogui library) of a predefined spot on the screen, coresponding to the enemy and player's pokemon's level and names. Then it processes it slightly using the CSV library to get a black and white picture.
+2. Once we have a screenshot of the in-game font text, we run the separate_letters function. Using it, we first create vertical one-pixel wide layers of the original photo. Afterwards, we analyse which ones of these slices does not contain the color black, which implies a space. Using this information and the connect_slices function, separate_letters separates the picture into perfectly cut pictures of the individual letters.
 3. A list of letters is then passed into the get_text function, which is my implementation of an OCR. At first I wanted to use a pre-built library like Teseract, but it turned out to not work well with a pixelated font - in fact, it didn't work at all!
 ocr.py consists mainly of two functions and 2 precreated dictionaries. The dictionaries are letters_as_arrs and nums_as_arrs - they are screenshots of the pokemon font for numbers (for levels) and for letters (for pokemon names). When the list of letters is passed into get_text, the first function called is recognize name. It takes every provided letter and calculates the Hamming distance between itself and every entry in the dictionary, effectively finding the most similair letter out of every single one provided. The Hamming distance measures the sum of differences in each of the arrays' elements. If the arrays are of different sizes, it measures the differences in the common part but also adds a penality for the difference in size. This, however, still doesn't yield a 100% success ratio. Thus, the function get_text receives the recognized, probably sligtly misshaped word, and using fuzzy logic compares it to every single pokemon name fetched from the database. It then returns the most likely match. This yields a perfect OCR :)
 
